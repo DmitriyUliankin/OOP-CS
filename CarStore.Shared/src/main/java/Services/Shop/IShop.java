@@ -2,16 +2,18 @@ package Services.Shop;
 
 import Data.Entities.Accounting.Customer;
 import Data.Entities.Accounting.ISaleable;
+import Data.Entities.IEntity;
+import Exceptions.Entities.EntityNotFoundException;
 
-public interface IShop <T extends ISaleable>
+public interface IShop <TEntity extends ISaleable & IEntity<TKey>, TKey>
 {
-    void AddToStock(T item);
-    void Sale(T item, int customerId, String customerName, double price);
-    void Sale(T item, Customer customer);
-    void Sale(T item, Customer customer, double price);
-    void SaleAnonymously(T item);
-    void SaleAnonymously(T item, double price);
-    void FixPrice(T item, double pricePercentage);
-    void SetPrice(T item, double newPrice);
-    void RemoveFromStock(T item);
+    void AddToStock(TEntity item);
+    void Sale(TEntity item, int customerId, String customerName, double price) throws EntityNotFoundException;
+    void Sale(TEntity item, Customer customer) throws EntityNotFoundException;
+    void Sale(TEntity item, Customer customer, double price) throws EntityNotFoundException;
+    void SaleAnonymously(TEntity item) throws EntityNotFoundException;
+    void SaleAnonymously(TEntity item, double price) throws EntityNotFoundException;
+    void FixPrice(TEntity item, double pricePercentage) throws EntityNotFoundException;
+    void SetPrice(TEntity item, double newPrice) throws EntityNotFoundException;
+    void RemoveFromStock(TEntity item) throws EntityNotFoundException;
 }
