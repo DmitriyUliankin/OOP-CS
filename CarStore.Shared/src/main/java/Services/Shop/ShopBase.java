@@ -1,6 +1,7 @@
 package Services.Shop;
 
 import Data.Entities.Accounting.Customer;
+import Data.Entities.Accounting.Enums.SaleableStatus;
 import Data.Entities.Accounting.Enums.TransactionType;
 import Data.Entities.Accounting.ISaleable;
 import Data.Entities.Accounting.SaleDetails;
@@ -28,6 +29,10 @@ public abstract class ShopBase<T extends ISaleable>
 
     public void Sale(T item, int customerId, String customerName, double price)
     {
+        if(item.get_status() == SaleableStatus.Sold)
+        {
+            //todo: throw new item already sold exception
+        }
         SaleDetails details = item.MarkSold(price);
         Transaction transaction = new Transaction(TransactionType.Sale, details, customerId, customerName, new Date());
         _accountingService.WriteTransaction(transaction);
@@ -35,7 +40,7 @@ public abstract class ShopBase<T extends ISaleable>
     }
 
     public void Sale(T item, Customer customer) {
-        Sale(item, customer, item.get_Price());
+        Sale(item, customer, item.get_price());
     }
 
     public void Sale(T item, Customer customer, double price) {
@@ -43,7 +48,7 @@ public abstract class ShopBase<T extends ISaleable>
     }
 
     public void SaleAnonymously(T item) {
-        SaleAnonymously(item, item.get_Price());
+        SaleAnonymously(item, item.get_price());
     }
 
     public void SaleAnonymously(T item, double price)
@@ -52,17 +57,17 @@ public abstract class ShopBase<T extends ISaleable>
     }
 
     public void FixPrice(T item, double pricePercentage) {
-        SetPrice(item, item.get_Price() * pricePercentage / 100);
+        SetPrice(item, item.get_price() * pricePercentage / 100);
         _entityRepository.Update(item);
     }
 
     public void SetPrice(T item, double newPrice) {
-        item.set_Price(newPrice);
+        item.set_price(newPrice);
         _entityRepository.Update(item);
     }
 
     public void RemoveFromStock(T item) {
-        item.MarkSold(item.get_Price());
+        item.MarkSold(item.get_price());
         _entityRepository.Update(item);
     }
 }
