@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CarStore.Console/CarStore.Console.iml" filepath="$PROJECT_DIR$/CarStore.Console/CarStore.Console.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CarStore.FileSystem/CarStore.FileSystem.iml" filepath="$PROJECT_DIR$/CarStore.FileSystem/CarStore.FileSystem.iml" />
       <module fileurl="file://$PROJECT_DIR$/CarStore.Shared/CarStore.Shared.iml" filepath="$PROJECT_DIR$/CarStore.Shared/CarStore.Shared.iml" />
     </modules>
   </component>
