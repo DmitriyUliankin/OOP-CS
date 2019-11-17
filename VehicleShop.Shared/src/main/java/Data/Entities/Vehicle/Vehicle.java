@@ -1,15 +1,15 @@
 package Data.Entities.Vehicle;
 
+import Data.Entities.Accounting.Enums.SaleableStatus;
 import Data.Entities.Accounting.ISaleable;
 import Data.Entities.Accounting.SaleDetails;
 import Data.Entities.IEntity;
 import Data.Entities.Vehicle.Enums.FuelType;
-import Data.Entities.Accounting.Enums.SaleableStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 public abstract class Vehicle
-    implements ISaleable, IEntity<Integer>
+        implements ISaleable, IEntity<Integer>
 {
     public Vehicle(int serialNumber, String name, int year, FuelType fuelType, double price)
     {
@@ -18,6 +18,16 @@ public abstract class Vehicle
         _year = year;
         _fuelType = fuelType;
         _price = price;
+    }
+
+    public Vehicle(int serialNumber, String name, int year, FuelType fuelType, double price, SaleableStatus status)
+    {
+        _serialNumber = serialNumber;
+        _name = name;
+        _year = year;
+        _fuelType = fuelType;
+        _price = price;
+        _status = status;
     }
 
     private @Getter int _serialNumber;
