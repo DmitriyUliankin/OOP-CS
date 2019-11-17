@@ -11,7 +11,7 @@ import Data.Repository.IEntityRepository;
 import Exceptions.Entities.EntityNotFoundException;
 import Services.Accounting.IAccountingService;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public abstract class ShopBase<TEntity extends ISaleable & IEntity<TKey>, TKey>
     implements IShop<TEntity, TKey>
@@ -34,8 +34,8 @@ public abstract class ShopBase<TEntity extends ISaleable & IEntity<TKey>, TKey>
         {
             //todo: throw new item already sold exception
         }
-        SaleDetails details = item.MarkSold(price);
-        Transaction transaction = new Transaction(TransactionType.Sale, details, customerId, customerName, new Date());
+        SaleDetails details = item.Sale(price);
+        Transaction transaction = new Transaction(TransactionType.Sale, details, customerId, customerName, LocalDateTime.now());
         _accountingService.WriteTransaction(transaction);
         _entityRepository.Update(item);
     }
@@ -67,7 +67,7 @@ public abstract class ShopBase<TEntity extends ISaleable & IEntity<TKey>, TKey>
     }
 
     public void RemoveFromStock(TEntity item) throws EntityNotFoundException {
-        item.MarkSold(item.get_price());
+        item.Sale(item.get_price());
         _entityRepository.Update(item);
     }
 }

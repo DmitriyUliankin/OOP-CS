@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public class SaleDetails {
-    public @Getter String _productType;
-    public @Getter int _productId;
-    public @Getter String _productName;
-    public @Getter double _salePrice;
+    private @Getter String _productType;
+    private @Getter int _productId;
+    private @Getter String _productName;
+    private @Getter double _salePrice;
 }
