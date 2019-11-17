@@ -10,20 +10,40 @@ import Data.Entities.IEntity;
 import Data.Repository.IEntityRepository;
 import Exceptions.Entities.EntityNotFoundException;
 import Services.Accounting.IAccountingService;
+import Services.Shop.Models.ProductListItem;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public abstract class ShopBase<TEntity extends ISaleable & IEntity<TKey>, TKey>
     implements IShop<TEntity, TKey>
 {
+    protected IAccountingService _accountingService;
+    protected IEntityRepository<TKey,TEntity> _entityRepository;
+
     public ShopBase(IAccountingService accountingService, IEntityRepository<TKey,TEntity> entityRepository)
     {
         _accountingService = accountingService;
         _entityRepository = entityRepository;
     }
 
-    protected IAccountingService _accountingService;
-    protected IEntityRepository<TKey,TEntity> _entityRepository;
+    protected abstract ProductListItem ToListItem(TEntity entity);
+
+    public ArrayList<ProductListItem> List()
+    {
+        var items = _entityRepository.List()
+                .stream()
+                .filter(x -> x.get_status() == SaleableStatus.InStock)
+                .map(this::ToListItem)
+                .collect(Collectors.toList());
+
+        return new ArrayList<ProductListItem>(items);
+    }
+
+    public TEntity Get(TKey key) throws EntityNotFoundException {
+        return _entityRepository.Get(key);
+    }
 
     public void AddToStock(TEntity item) {
         _entityRepository.Create(item);
