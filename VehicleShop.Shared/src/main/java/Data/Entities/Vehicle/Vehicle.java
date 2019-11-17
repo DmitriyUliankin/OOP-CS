@@ -37,7 +37,7 @@ public abstract class Vehicle
     private @Getter @Setter double _price;
     private @Getter SaleableStatus _status = SaleableStatus.InStock;
 
-    public SaleDetails MarkSold(double salePrice)
+    public SaleDetails Sale(double salePrice)
     {
         _price = salePrice;
         _status = SaleableStatus.Sold;

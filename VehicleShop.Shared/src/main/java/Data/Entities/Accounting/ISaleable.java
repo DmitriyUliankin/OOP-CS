@@ -6,6 +6,6 @@ public interface ISaleable {
     double get_price();
     void set_price(double price);
     SaleableStatus get_status();
-    SaleDetails MarkSold(double salePrice);
+    SaleDetails Sale(double salePrice);
     String get_productType();
 }
