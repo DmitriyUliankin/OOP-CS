@@ -22,7 +22,7 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
 
     @Override
     public T Get(TKey key) throws EntityNotFoundException {
-        var entity = _collection.stream().filter(i -> key.equals(i.get_key()))
+        T entity = _collection.stream().filter(i -> key.equals(i.get_key()))
                 .findAny()
                 .orElse(null);
 

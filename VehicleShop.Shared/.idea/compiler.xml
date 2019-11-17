@@ -7,11 +7,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="CarStore.Shared" />
+        <module name="VehicleShop.FileSystem" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="CarStore.Shared" target="1.5" />
-    </bytecodeTargetLevel>
   </component>
 </project>
