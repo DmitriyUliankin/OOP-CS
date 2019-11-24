@@ -40,16 +40,44 @@ public class Menu {
         input = scanner.nextInt();
         switch (input)
         {
-            case 1: addVehicle();
-            case 2: deleteVehicle();
-            case 3: showAllVehicles();
-            case 4: showCars();
-            case 5: showMotorcycles();
-            case 6: getVehicleDetails();
-            case 7: saleVehicleToCustomer();
-            case 8: printTodaysTransaction();
-            case 9: exit();
-            default: System.out.println("Incorrect input!");
+            case 1: {
+                addVehicle();
+                break;
+            }
+            case 2: {
+                deleteVehicle();
+                break;
+            }
+            case 3: {
+                showAllVehicles();
+                break;
+            }
+            case 4: {
+                showCars();
+                break;
+            }
+            case 5: {
+                showMotorcycles();
+                break;
+            }
+            case 6: {
+                getVehicleDetails();
+                break;
+            }
+            case 7: {
+                saleVehicleToCustomer();
+                break;
+            }
+            case 8: {
+                printTodaysTransaction();
+                break;
+            }
+            case 9: {
+                exit();
+            }
+            default: {
+                System.out.println("Incorrect input!");
+            }
         }
     }
 
@@ -69,12 +97,12 @@ public class Menu {
     }
 
     private int getEntityId() {
-        System.out.println("Enter ID...");
+        System.out.println("Enter ID");
         int input = 0;
         Scanner scanner = new Scanner(System.in);
         while(true){
             input = scanner.nextInt();
-            if(input >= 1) {
+            if(input > 0) {
                 break;
             } else {
                 System.out.println("Incorrect input!");
@@ -101,8 +129,7 @@ public class Menu {
         }
 
         System.out.println("Enter name: ");
-        String name = null;
-        name = scanner.next();
+        String name = scanner.next();
 
         System.out.println("Enter year: ");
         int year = 0;
@@ -156,11 +183,11 @@ public class Menu {
         FuelType fuelType = FuelType.Petroleum;
 
         switch (fuel_type){
-            case 1: fuelType = FuelType.Petroleum;
-            case 2: fuelType = FuelType.Gazoline;
-            case 3: fuelType = FuelType.Diezel;
-            case 4: fuelType = FuelType.Electricity;
-            case 5: fuelType = FuelType.Hybrid;
+            case 1: return FuelType.Petroleum;
+            case 2: return FuelType.Gazoline;
+            case 3: return FuelType.Diezel;
+            case 4: return FuelType.Electricity;
+            case 5: return FuelType.Hybrid;
         }
         return fuelType;
     }
