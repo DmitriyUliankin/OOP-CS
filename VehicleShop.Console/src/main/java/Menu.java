@@ -74,6 +74,7 @@ public class Menu {
             }
             case 9: {
                 exit();
+                break;
             }
             default: {
                 System.out.println("Incorrect input!");
