@@ -4,6 +4,7 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+VehicleShop.Shared/.idea/codeStyles/*
 
 # Generated files
 .idea/**/contentModel.xml
