@@ -11,11 +11,10 @@ import java.util.ArrayList;
 public abstract class FileRepositoryBase<TKey, TEntity extends IEntity<TKey>>
     extends InMemoryRepositoryBase<TKey, TEntity>
 {
-    public FileRepositoryBase(@NonNull String filepath, @NonNull IEntityConverter<TEntity, String> converter)
+    public FileRepositoryBase(@NonNull String filepath)
     {
         super();
         _filepath = filepath;
-        _converter = converter;
 
         if(_collection == null || _collection.isEmpty())
         {
@@ -28,7 +27,7 @@ public abstract class FileRepositoryBase<TKey, TEntity extends IEntity<TKey>>
     }
 
     protected @NonNull String _filepath;
-    protected @NonNull IEntityConverter<TEntity, String> _converter;
+    protected abstract IEntityConverter<TEntity, String> get_converter();
 
     @Override
     public void Update(TEntity entity) throws EntityNotFoundException {
@@ -57,7 +56,7 @@ public abstract class FileRepositoryBase<TKey, TEntity extends IEntity<TKey>>
 
         _collection = new ArrayList<>();
         for (String s : stringList) {
-            _collection.add(_converter.ConvertReverse(s));
+            _collection.add(get_converter().ConvertReverse(s));
         }
     }
 
@@ -65,7 +64,7 @@ public abstract class FileRepositoryBase<TKey, TEntity extends IEntity<TKey>>
         StringBuilder sb = new StringBuilder();
 
         for (TEntity entity: _collection) {
-            sb.append(_converter.Convert(entity)).append(System.getProperty("line.separator"));
+            sb.append(get_converter().Convert(entity)).append(System.getProperty("line.separator"));
         }
 
         FileWriter writer;
