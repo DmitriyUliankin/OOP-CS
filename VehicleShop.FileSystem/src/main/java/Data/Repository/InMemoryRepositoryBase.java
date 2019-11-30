@@ -62,6 +62,7 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
         {
             int index = _collection.indexOf(existentEntity);
             _collection.set(index, entity);
+            return;
         }
 
         throw new EntityNotFoundException();
