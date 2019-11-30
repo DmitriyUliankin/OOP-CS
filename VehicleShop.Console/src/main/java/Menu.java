@@ -4,7 +4,6 @@ import Data.Entities.Vehicle.Car;
 import Data.Entities.Vehicle.Enums.FuelType;
 import Data.Entities.Vehicle.Motorcycle;
 import Data.Entities.Vehicle.Vehicle;
-import Data.Repository.FileRepositoryBase;
 import Exceptions.Entities.EntityNotFoundException;
 import Services.Shop.Models.ProductListItem;
 import Servises.DoubleInputValidator;
@@ -109,7 +108,7 @@ public class Menu {
         int serialNumber = _intValidator.getInput();
 
         System.out.println("Enter name: ");
-        String name = scanner.next();
+        String name = scanner.nextLine();
 
         System.out.println("Enter year: ");
         int year = _intValidator.getInput();
@@ -185,10 +184,6 @@ public class Menu {
 
     private void showCars() {
         ArrayList<ProductListItem> products = ShopService.get_carShop().List();
-        printProductList(products);
-    }
-    private void showMotorcycles(){
-        ArrayList<ProductListItem> products = ShopService.get_motorcycleShop().List();
         printProductList(products);
     }
 
