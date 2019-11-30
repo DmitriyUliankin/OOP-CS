@@ -4,9 +4,10 @@ import Data.Entities.Vehicle.Car;
 import Data.Entities.Vehicle.Enums.FuelType;
 import Data.Entities.Vehicle.Motorcycle;
 import Data.Entities.Vehicle.Vehicle;
-import Data.Repository.FileRepositoryBase;
 import Exceptions.Entities.EntityNotFoundException;
 import Services.Shop.Models.ProductListItem;
+import Servises.DoubleInputValidator;
+import Servises.IntInputValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,11 @@ import java.util.Scanner;
 
 public class Menu {
 
+    private IntInputValidator _intValidator = new IntInputValidator();
+    private DoubleInputValidator _doubleValidator = new DoubleInputValidator();
     private boolean _isActive = true;
 
-    public boolean getStatus()
-    {
+    public boolean getStatus() {
         return _isActive;
     }
 
@@ -35,11 +37,8 @@ public class Menu {
     }
 
     private void waitUserInput() {
-        int input = 0;
-        Scanner scanner = new Scanner(System.in);
-        input = scanner.nextInt();
-        switch (input)
-        {
+        int input = _intValidator.getInput();
+        switch (input) {
             case 1: {
                 addVehicle();
                 break;
@@ -85,10 +84,9 @@ public class Menu {
     private int getVehicleType() {
         System.out.println("Choose: \"1\" - Car or \"2\" - Motorcycle");
         int vehicleType = 0;
-        Scanner scanner = new Scanner(System.in);
-        while (true){
-            vehicleType = scanner.nextInt();
-            if(vehicleType > 0 && vehicleType < 3) {
+        while (true) {
+            vehicleType = _intValidator.getInput();
+            if (vehicleType > 0 && vehicleType < 3) {
                 break;
             } else {
                 System.out.println("Incorrect input!");
@@ -99,96 +97,61 @@ public class Menu {
 
     private int getEntityId() {
         System.out.println("Enter ID");
-        int input = 0;
-        Scanner scanner = new Scanner(System.in);
-        while(true){
-            input = scanner.nextInt();
-            if(input > 0) {
-                break;
-            } else {
-                System.out.println("Incorrect input!");
-            }
-        }
-        return input;
+        return _intValidator.getInput();
     }
 
-    private void addVehicle()
-    {
+    private void addVehicle() {
         int vehicleType = getVehicleType();
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter serial number (>0): ");
-        int serialNumber = 0;
-        while(true){
-            serialNumber = scanner.nextInt();
-            if(serialNumber > 0) {
-                break;
-            }
-            else {
-                System.out.println("Incorrect input!");
-            }
-        }
+        System.out.println("Enter serial number: ");
+        int serialNumber = _intValidator.getInput();
 
         System.out.println("Enter name: ");
-        String name = scanner.next();
+        String name = scanner.nextLine();
 
         System.out.println("Enter year: ");
-        int year = 0;
-        while(true){
-            year = scanner.nextInt();
-            if(year > 0 && year < 2020){
-                break;
-            } else {
-                System.out.println("Incorrect input!");
-            }
-        }
+        int year = _intValidator.getInput();
 
         System.out.println("Enter fuel type (1 = Petroleum, 2 = Gazoline, 3 = Diezel, 4 = Electricity, 5 = Hybrid): ");
-        FuelType fuelType = getFuelType(scanner);
+        FuelType fuelType = getFuelType();
 
         System.out.println("Enter price: ");
-        double price = 0;
-        while(true){
-            price = scanner.nextDouble();
-            if(price > 0){
-                break;
-            } else {
-                System.out.println("Incorrect input!");
-            }
-        }
+        double price = _doubleValidator.getInput();
 
-        if(vehicleType == 1)
-        {
+        if (vehicleType == 1) {
             Car car = new Car(serialNumber, name, year, fuelType, price);
             ShopService.get_carShop().AddToStock(car);
-        }
-        else if(vehicleType == 2)
-        {
+        } else if (vehicleType == 2) {
             Motorcycle motorcycle = new Motorcycle(serialNumber, name, year, fuelType, price);
             ShopService.get_motorcycleShop().AddToStock(motorcycle);
         }
     }
 
-    private FuelType getFuelType(Scanner scanner) {
+    private FuelType getFuelType() {
         int fuel_type = 0;
-        while(true){
-            fuel_type = scanner.nextInt();
-            if(fuel_type > 0 && fuel_type < 6) {
+        while (true) {
+            fuel_type = _intValidator.getInput();
+            if (fuel_type > 0 && fuel_type < 6) {
                 break;
-            }
-            else {
+            } else {
                 System.out.println("Incorrect input!");
             }
         }
 
         FuelType fuelType = FuelType.Petroleum;
 
-        switch (fuel_type){
-            case 1: return FuelType.Petroleum;
-            case 2: return FuelType.Gazoline;
-            case 3: return FuelType.Diezel;
-            case 4: return FuelType.Electricity;
-            case 5: return FuelType.Hybrid;
+        switch (fuel_type) {
+            case 1:
+                return FuelType.Petroleum;
+            case 2:
+                return FuelType.Gazoline;
+            case 3:
+                return FuelType.Diezel;
+            case 4:
+                return FuelType.Electricity;
+            case 5:
+                return FuelType.Hybrid;
         }
         return fuelType;
     }
@@ -196,25 +159,20 @@ public class Menu {
     private void deleteVehicle() {
         int vehicleType = getVehicleType();
         int id = getEntityId();
-        if(vehicleType == 1)
-        {
-            try
-            {
+        if (vehicleType == 1) {
+            try {
                 Car car = ShopService.get_carShop().Get(id);
                 ShopService.get_carShop().RemoveFromStock(car);
                 return;
+            } catch (EntityNotFoundException e) {
             }
-            catch (EntityNotFoundException e) { }
-        }
-        else if(vehicleType == 2)
-        {
-            try
-            {
+        } else if (vehicleType == 2) {
+            try {
                 Motorcycle motorcycle = ShopService.get_motorcycleShop().Get(id);
                 ShopService.get_motorcycleShop().AddToStock(motorcycle);
                 return;
+            } catch (EntityNotFoundException e) {
             }
-            catch (EntityNotFoundException e) { }
         }
         System.out.println("Product not found!");
     }
@@ -223,11 +181,13 @@ public class Menu {
         ArrayList<ProductListItem> products = ShopService.listAllVehicles();
         printProductList(products);
     }
+
     private void showCars() {
         ArrayList<ProductListItem> products = ShopService.get_carShop().List();
         printProductList(products);
     }
-    private void showMotorcycles(){
+
+    private void showMotorcycles() {
         ArrayList<ProductListItem> products = ShopService.get_motorcycleShop().List();
         printProductList(products);
     }
@@ -240,22 +200,18 @@ public class Menu {
         }
     }
 
-    private void getVehicleDetails()
-    {
+    private void getVehicleDetails() {
         int type = getVehicleType();
         int id = getEntityId();
 
-        if(type == 1)
-        {
+        if (type == 1) {
             try {
                 Car car = ShopService.get_carShop().Get(id);
                 printVehicle(car);
             } catch (EntityNotFoundException e) {
                 System.out.println("Product not found!");
             }
-        }
-        else if(type == 2)
-        {
+        } else if (type == 2) {
             try {
                 Motorcycle moto = ShopService.get_motorcycleShop().Get(id);
                 printVehicle(moto);
@@ -276,7 +232,7 @@ public class Menu {
 
     private void printTodaysTransaction() {
         List<Transaction> sales = ShopService.listTodaysTransactions();
-        for (Transaction t: sales) {
+        for (Transaction t : sales) {
             System.out.println(String.format("Transaction type: %s", t.get_transactionType().toString()));
             System.out.println(String.format("Product type: %s", t.get_productType()));
             System.out.println(String.format("Product id: %s", t.get_productId()));
@@ -297,22 +253,20 @@ public class Menu {
         System.out.println("Enter the birth day  of the customer: ");
         dob = scanner.nextLine();
 
-        Customer customer= new Customer(name, dob);
+        Customer customer = new Customer(name, dob);
 
         int type = getVehicleType();
         int id = getEntityId();
 
-        if(type == 1)
-        {
+        if (type == 1) {
             try {
                 Car car = ShopService.get_carShop().Get(id);
                 ShopService.get_carShop().Sale(car, customer);
             } catch (EntityNotFoundException e) {
                 System.out.println("Product not found!");
             }
-        }
-        else if(type == 2)
-        {
+        } else if (type == 2) {
+
             try {
                 Motorcycle moto = ShopService.get_motorcycleShop().Get(id);
                 ShopService.get_motorcycleShop().Sale(moto, customer);
@@ -322,8 +276,7 @@ public class Menu {
         }
     }
 
-    private void exit()
-    {
+    private void exit() {
         _isActive = false;
     }
 }
