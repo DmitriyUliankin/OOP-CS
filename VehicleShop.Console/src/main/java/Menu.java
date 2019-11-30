@@ -4,6 +4,7 @@ import Data.Entities.Vehicle.Car;
 import Data.Entities.Vehicle.Enums.FuelType;
 import Data.Entities.Vehicle.Motorcycle;
 import Data.Entities.Vehicle.Vehicle;
+import Data.Repository.FileRepositoryBase;
 import Exceptions.Entities.EntityNotFoundException;
 import Services.Shop.Models.ProductListItem;
 import Servises.DoubleInputValidator;
@@ -83,7 +84,7 @@ public class Menu {
 
     private int getVehicleType() {
         System.out.println("Choose: \"1\" - Car or \"2\" - Motorcycle");
-        int vehicleType;
+        int vehicleType = 0;
         while (true) {
             vehicleType = _intValidator.getInput();
             if (vehicleType > 0 && vehicleType < 3) {
@@ -129,7 +130,7 @@ public class Menu {
     }
 
     private FuelType getFuelType() {
-        int fuel_type;
+        int fuel_type = 0;
         while (true) {
             fuel_type = _intValidator.getInput();
             if (fuel_type > 0 && fuel_type < 6) {
@@ -184,6 +185,10 @@ public class Menu {
 
     private void showCars() {
         ArrayList<ProductListItem> products = ShopService.get_carShop().List();
+        printProductList(products);
+    }
+    private void showMotorcycles(){
+        ArrayList<ProductListItem> products = ShopService.get_motorcycleShop().List();
         printProductList(products);
     }
 
@@ -266,6 +271,7 @@ public class Menu {
                 System.out.println("Product not found!");
             }
         } else if (type == 2) {
+
             try {
                 Motorcycle moto = ShopService.get_motorcycleShop().Get(id);
                 ShopService.get_motorcycleShop().Sale(moto, customer);
