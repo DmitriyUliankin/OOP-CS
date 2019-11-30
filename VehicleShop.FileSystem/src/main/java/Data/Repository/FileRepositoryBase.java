@@ -18,11 +18,7 @@ public abstract class FileRepositoryBase<TKey, TEntity extends IEntity<TKey>>
 
         if(_collection == null || _collection.isEmpty())
         {
-            try {
-                ReadFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            ReadFile();
         }
     }
 
@@ -43,21 +39,35 @@ public abstract class FileRepositoryBase<TKey, TEntity extends IEntity<TKey>>
         WriteFile();
     }
 
-    protected void ReadFile() throws IOException {
-        FileReader reader = new FileReader(_filepath);
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        ArrayList<String> stringList = new ArrayList<>();
-        String line;
-
-        while ((line = bufferedReader.readLine()) != null) {
-            stringList.add(line);
-        }
-        reader.close();
-
+    protected void ReadFile()
+    {
         _collection = new ArrayList<>();
-        for (String s : stringList) {
-            _collection.add(get_converter().ConvertReverse(s));
+
+        try
+        {
+            FileReader reader = new FileReader(_filepath);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            ArrayList<String> stringList = new ArrayList<>();
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                stringList.add(line);
+            }
+
+            reader.close();
+
+            if(stringList.isEmpty())
+                return;
+
+            for (String s : stringList) {
+                if(s != null || !s.isEmpty())
+                {
+                    TEntity entity = get_converter().ConvertReverse(s);
+                    _collection.add(entity);
+                }
+            }
         }
+        catch (IOException e) {}
     }
 
     protected void WriteFile(){
@@ -69,11 +79,9 @@ public abstract class FileRepositoryBase<TKey, TEntity extends IEntity<TKey>>
 
         FileWriter writer;
         try {
-            writer = new FileWriter(_filepath);
+            writer = new FileWriter(_filepath,false);
             writer.write(sb.toString());
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            writer.flush();
+        } catch (IOException e) { }
     }
 }
