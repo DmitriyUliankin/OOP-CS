@@ -16,6 +16,7 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
     }
 
     protected List<T> _collection;
+    protected String _entityName = "Entity";
 
     @Override
     public T Get(TKey key) throws EntityNotFoundException {
@@ -25,7 +26,7 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
 
         if(entity == null)
         {
-            throw new EntityNotFoundException(key.toString(), entity.getClass().getTypeName());
+            throw new EntityNotFoundException(key.toString(), _entityName);
         }
 
         return entity;
@@ -47,7 +48,7 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
             _collection.add(entity);
         }
         else{
-            throw new EntityAlreadyExistException(entity.get_key().toString(), entity.getClass().getTypeName());
+            throw new EntityAlreadyExistException(entity.get_key().toString(), _entityName);
         }
     }
 
@@ -64,6 +65,6 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
             return;
         }
 
-        throw new EntityNotFoundException(entity.get_key().toString(), entity.getClass().getTypeName());
+        throw new EntityNotFoundException(entity.get_key().toString(), _entityName);
     }
 }

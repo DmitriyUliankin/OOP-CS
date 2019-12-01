@@ -10,6 +10,7 @@ public class MotorcycleCsvRepository extends FileRepositoryBase<Integer, Motorcy
 
     public MotorcycleCsvRepository(@NonNull String filepath) {
         super(filepath);
+        _entityName = "Motorcycle";
     }
 
     @Override

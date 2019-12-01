@@ -240,6 +240,7 @@ public class Menu {
     }
 
     private void saleVehicleToCustomer() {
+        System.out.println("Enter customer ID:");
         int customerId = _intValidator.getInput();
         Customer customer;
         try {

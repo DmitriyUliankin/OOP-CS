@@ -11,6 +11,7 @@ public class CustomerCsvRepository extends FileRepositoryBase<Integer, Customer>
 
     public CustomerCsvRepository(@NonNull String filepath) {
         super(filepath);
+        _entityName = "Customer";
     }
 
     @Override
