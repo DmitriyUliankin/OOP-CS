@@ -8,7 +8,9 @@ import Data.Entities.Accounting.SaleDetails;
 import Data.Entities.Accounting.Transaction;
 import Data.Entities.IEntity;
 import Data.Repository.IEntityRepository;
+import Exceptions.Entities.EntityAlreadyExistException;
 import Exceptions.Entities.EntityNotFoundException;
+import Exceptions.Entities.ProductAlreadySoldException;
 import Services.Accounting.IAccountingService;
 import Services.Shop.Models.ProductListItem;
 
@@ -38,21 +40,22 @@ public abstract class ShopBase<TEntity extends ISaleable & IEntity<TKey>, TKey>
                 .map(this::ToListItem)
                 .collect(Collectors.toList());
 
-        return new ArrayList<ProductListItem>(items);
+        return new ArrayList<>(items);
     }
 
     public TEntity Get(TKey key) throws EntityNotFoundException {
         return _entityRepository.Get(key);
     }
 
-    public void AddToStock(TEntity item) {
+    public void AddToStock(TEntity item) throws EntityAlreadyExistException {
         _entityRepository.Create(item);
     }
 
-    public void Sale(TEntity item, int customerId, String customerName, double price) throws EntityNotFoundException {
+    public void Sale(TKey key, int customerId, String customerName, double price) throws EntityNotFoundException, ProductAlreadySoldException {
+        TEntity item = _entityRepository.Get(key);
         if(item.get_status() == SaleableStatus.Sold)
         {
-            //todo: throw new item already sold exception
+            throw new ProductAlreadySoldException(key.toString(), item.get_productType());
         }
         SaleDetails details = item.Sale(price);
         Transaction transaction = new Transaction(TransactionType.Sale, details, customerId, customerName, LocalDateTime.now());
@@ -60,33 +63,23 @@ public abstract class ShopBase<TEntity extends ISaleable & IEntity<TKey>, TKey>
         _entityRepository.Update(item);
     }
 
-    public void Sale(TEntity item, Customer customer) throws EntityNotFoundException {
-        Sale(item, customer, item.get_price());
+    public void Sale(TKey key, Customer customer) throws EntityNotFoundException, ProductAlreadySoldException {
+        TEntity item = _entityRepository.Get(key);
+        Sale(key, customer, item.get_price());
     }
 
-    public void Sale(TEntity item, Customer customer, double price) throws EntityNotFoundException {
-        Sale(item, customer.get_key(), customer.get_name(), price);
+    public void Sale(TKey key, Customer customer, double price) throws EntityNotFoundException, ProductAlreadySoldException {
+        Sale(key, customer.get_key(), customer.get_name(), price);
     }
 
-    public void SaleAnonymously(TEntity item) throws EntityNotFoundException {
-        SaleAnonymously(item, item.get_price());
-    }
-
-    public void SaleAnonymously(TEntity item, double price) throws EntityNotFoundException {
-        Sale(item, -1, null, price);
-    }
-
-    public void FixPrice(TEntity item, double pricePercentage) throws EntityNotFoundException {
-        SetPrice(item, item.get_price() * pricePercentage / 100);
-        _entityRepository.Update(item);
-    }
-
-    public void SetPrice(TEntity item, double newPrice) throws EntityNotFoundException {
+    public void SetPrice(TKey key, double newPrice) throws EntityNotFoundException {
+        TEntity item = _entityRepository.Get(key);
         item.set_price(newPrice);
         _entityRepository.Update(item);
     }
 
-    public void RemoveFromStock(TEntity item) throws EntityNotFoundException {
+    public void RemoveFromStock(TKey key) throws EntityNotFoundException {
+        TEntity item = _entityRepository.Get(key);
         item.Sale(item.get_price());
         _entityRepository.Update(item);
     }
