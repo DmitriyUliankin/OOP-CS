@@ -1,9 +1,11 @@
 package Data.Entities.Accounting;
 
 import Data.Entities.IEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+@AllArgsConstructor
 public class Customer
     implements IEntity<Integer>
 {

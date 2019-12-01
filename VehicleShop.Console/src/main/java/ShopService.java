@@ -1,9 +1,19 @@
+import Data.Entities.Accounting.Customer;
 import Data.Entities.Accounting.Transaction;
+import Data.Entities.Vehicle.Car;
+import Data.Entities.Vehicle.Motorcycle;
+import Data.Entities.Vehicle.Vehicle;
+import Exceptions.Entities.EntityAlreadyExistException;
+import Exceptions.Entities.EntityNotFoundException;
+import Exceptions.Entities.ProductAlreadySoldException;
 import Repositories.CarCsvRepository;
+import Repositories.CustomerCsvRepository;
 import Repositories.MotorcycleCsvRepository;
 import Repositories.TransactionCsvRepository;
 import Services.Accounting.AccountingService;
+import Services.Accounting.CustomerService;
 import Services.Accounting.IAccountingService;
+import Services.Accounting.ICustomerService;
 import Services.Shop.Models.ProductListItem;
 import Services.Shop.Vehicle.CarShop;
 import Services.Shop.Vehicle.MotorcycleShop;
@@ -18,13 +28,24 @@ public class ShopService
     private static final String CarCsvRepositoryPath = "carRepository.csv";
     private static final String MotorcycleCsvRepositoryPath = "motorcycleRepository.csv";
     private static final String TransactionCsvRepositoryPath = "transactionRepository.csv";
+    private static final String CustomerCsvRepositoryPath = "customerRepository.csv";
 
     private static AccountingService _accountingService;
     private static TransactionCsvRepository _transactionRepository;
+    private static ICustomerService _customerService;
+    private static CustomerCsvRepository _customerRepository;
     private static CarShop _carShop;
     private static CarCsvRepository _carRepository;
     private static MotorcycleShop _motorcycleShop;
     private static MotorcycleCsvRepository _motorcycleRepository;
+
+    public static ICustomerService get_customerService(){
+        if(_customerService == null)
+        {
+            _customerService = new CustomerService(get_customerRepository());
+        }
+        return _customerService;
+    }
 
     public static CarShop get_carShop() {
         if(_carShop == null)
@@ -63,6 +84,26 @@ public class ShopService
                 .collect(Collectors.toList());
     }
 
+    public static void Add(Vehicle v) throws EntityAlreadyExistException {
+        if(v instanceof  Car)
+        {
+            get_carShop().AddToStock((Car)v);
+        }
+        else if(v instanceof Motorcycle)
+        {
+            get_motorcycleShop().AddToStock((Motorcycle) v);
+        }
+    }
+
+    public static void Sale(int id, Class type, Customer customer) throws EntityNotFoundException, ProductAlreadySoldException {
+        if (type == Car.class) {
+            get_carShop().Sale(id, customer);
+        }
+        else if (type == Motorcycle.class) {
+            get_motorcycleShop().Sale(id, customer);
+        }
+    }
+
     private static CarCsvRepository get_carRepository()
     {
         if(_carRepository == null)
@@ -96,5 +137,14 @@ public class ShopService
             _motorcycleRepository = new MotorcycleCsvRepository(MotorcycleCsvRepositoryPath);
         }
         return _motorcycleRepository;
+    }
+
+    private static CustomerCsvRepository get_customerRepository()
+    {
+        if(_customerRepository == null)
+        {
+            _customerRepository = new CustomerCsvRepository(CustomerCsvRepositoryPath);
+        }
+        return _customerRepository;
     }
 }

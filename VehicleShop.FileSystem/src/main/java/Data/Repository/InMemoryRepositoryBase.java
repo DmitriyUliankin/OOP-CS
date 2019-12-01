@@ -1,6 +1,7 @@
 package Data.Repository;
 
 import Data.Entities.IEntity;
+import Exceptions.Entities.EntityAlreadyExistException;
 import Exceptions.Entities.EntityNotFoundException;
 
 import java.util.ArrayList;
@@ -13,12 +14,9 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
     {
         _collection = new ArrayList<>();
     }
-    public InMemoryRepositoryBase(List<T> collection)
-    {
-        _collection = collection;
-    }
 
     protected List<T> _collection;
+    protected String _entityName = "Entity";
 
     @Override
     public T Get(TKey key) throws EntityNotFoundException {
@@ -28,7 +26,7 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
 
         if(entity == null)
         {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(key.toString(), _entityName);
         }
 
         return entity;
@@ -40,7 +38,7 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
     }
 
     @Override
-    public void Create(T entity) {
+    public void Create(T entity) throws EntityAlreadyExistException {
         T existentEntity = _collection.stream().filter(i -> entity.get_key().equals(i.get_key()))
                 .findAny()
                 .orElse(null);
@@ -49,7 +47,9 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
         {
             _collection.add(entity);
         }
-        //todo: throw entity already exists exception
+        else{
+            throw new EntityAlreadyExistException(entity.get_key().toString(), _entityName);
+        }
     }
 
     @Override
@@ -65,6 +65,6 @@ public class InMemoryRepositoryBase<TKey, T extends IEntity<TKey>>
             return;
         }
 
-        throw new EntityNotFoundException();
+        throw new EntityNotFoundException(entity.get_key().toString(), _entityName);
     }
 }

@@ -2,6 +2,7 @@ package Data.Repository;
 
 import Data.Converters.IEntityConverter;
 import Data.Entities.IEntity;
+import Exceptions.Entities.EntityAlreadyExistException;
 import Exceptions.Entities.EntityNotFoundException;
 import lombok.NonNull;
 
@@ -32,9 +33,7 @@ public abstract class FileRepositoryBase<TKey, TEntity extends IEntity<TKey>>
     }
 
     @Override
-    public void Create(TEntity entity)
-    {
-        //todo: super.Create should throw an exception if something went wrong so that we don't need to write the unchanged array to a file
+    public void Create(TEntity entity) throws EntityAlreadyExistException {
         super.Create(entity);
         WriteFile();
     }

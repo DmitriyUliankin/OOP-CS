@@ -11,6 +11,7 @@ public class CarCsvRepository extends FileRepositoryBase<Integer, Car> {
 
     public CarCsvRepository(@NonNull String filepath) {
         super(filepath);
+        _entityName = "Car";
     }
 
     @Override
