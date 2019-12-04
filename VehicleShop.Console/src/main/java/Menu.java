@@ -10,7 +10,9 @@ import Exceptions.Entities.ProductAlreadySoldException;
 import Services.Shop.Models.ProductListItem;
 import Servises.DoubleInputValidator;
 import Servises.IntInputValidator;
+import de.vandermeer.asciitable.AsciiTable;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -191,11 +193,16 @@ public class Menu {
             System.out.println("The stock is empty for now.");
             return;
         }
-
-        System.out.println("ID\tType\tName\tPrice");
+        AsciiTable table = new AsciiTable();
+        table.addRule();
+        table.addRow("ID","Type","Name","Price");
         for (ProductListItem p : products) {
-            System.out.println(String.format("%s\t%s\t%s\t%s", p.get_id(), p.get_type(), p.get_name(), p.get_price()));
+            table.addRule();
+            table.addRow(p.get_id(), p.get_type(), p.get_name(), p.get_price());
         }
+        table.addRule();
+        String result = table.render();
+        System.out.println(result);
     }
 
     private void getVehicleDetails() {
@@ -215,12 +222,22 @@ public class Menu {
     }
 
     private void printVehicle(Vehicle v) {
-        System.out.println(String.format("Type: %s", v.get_productType()));
-        System.out.println(String.format("Serial number: %s", v.get_serialNumber()));
-        System.out.println(String.format("Year: %s", v.get_year()));
-        System.out.println(String.format("Fuel type: %s", v.get_fuelType().toString()));
-        System.out.println(String.format("Status: %s", v.get_status().toString()));
-        System.out.println(String.format("Price: %s", v.get_price()));
+        AsciiTable table = new AsciiTable();
+        table.addRule();
+        table.addRow("Type", v.get_productType());
+        table.addRule();
+        table.addRow("Serial number", v.get_serialNumber());
+        table.addRule();
+        table.addRow("Year", v.get_year());
+        table.addRule();
+        table.addRow("Fuel type", v.get_fuelType().toString());
+        table.addRule();
+        table.addRow("Status", v.get_status().toString());
+        table.addRule();
+        table.addRow("Price", v.get_price());
+        table.addRule();
+        String result = table.render();
+        System.out.println(result);
     }
 
     private void printTodaysTransaction() {
@@ -228,18 +245,49 @@ public class Menu {
 
         if(sales == null || sales.isEmpty())
             System.out.println("No transactions was found!");
-        else for (Transaction t : sales) {
-                System.out.println(String.format("Transaction type: %s", t.get_transactionType().toString()));
-                System.out.println(String.format("Product type: %s", t.get_productType()));
-                System.out.println(String.format("Product id: %s", t.get_productId()));
-                System.out.println(String.format("Product name: %s", t.get_productName()));
-                System.out.println(String.format("Price: %s", t.get_salePrice()));
-                System.out.println(String.format("Customer: %s", t.get_customerFIO()));
-                System.out.println(String.format("Date: %s", t.get_date().toString()));
+        else {
+            AsciiTable header = new AsciiTable();
+            header.addRule();
+            header.addRow("Transaction by "+ LocalDate.now());
+            header.addRule();
+
+            AsciiTable table = new AsciiTable();
+            for (Transaction t : sales) {
+                table.addRule();
+                table.addRow("Transaction ID", t.get_key());
+                table.addRule();
+                table.addRow("Transaction type", t.get_transactionType().toString());
+                table.addRule();
+                table.addRow("Product type", t.get_productType());
+                table.addRule();
+                table.addRow("Product id", t.get_productId());
+                table.addRule();
+                table.addRow("Product name", t.get_productName());
+                table.addRule();
+                table.addRow("Price", t.get_salePrice());
+                table.addRule();
+                table.addRow("Customer", t.get_customerFIO());
+                table.addRule();
+                table.addRow("Date", t.get_date().toString());
+                table.addRule();
+            }
+            String headResult= header.render();
+            System.out.println(headResult);
+
+            String transactionResult = table.render();
+            System.out.println(transactionResult);
         }
     }
 
     private void saleVehicleToCustomer() {
+        int type = getVehicleType();
+
+        ArrayList<ProductListItem> products = type == 1 ? ShopService.get_carShop().List() : ShopService.get_motorcycleShop().List();
+        printProductList(products);
+        if(products == null || products.isEmpty())
+            return;
+
+        int id = getEntityId();
         System.out.println("Enter customer ID:");
         int customerId = _intValidator.getInput();
         Customer customer;
@@ -248,9 +296,6 @@ public class Menu {
         } catch (EntityNotFoundException e) {
             customer = createNewCustomer(customerId);
         }
-
-        int type = getVehicleType();
-        int id = getEntityId();
 
         try {
             ShopService.Sale(id, type == 1 ? Car.class : Motorcycle.class, customer);
