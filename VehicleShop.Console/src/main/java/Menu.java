@@ -158,13 +158,19 @@ public class Menu {
     }
 
     private void deleteVehicle() {
-        int vehicleType = getVehicleType();
+        int type = getVehicleType();
+
+        ArrayList<ProductListItem> products = type == 1 ? ShopService.get_carShop().List() : ShopService.get_motorcycleShop().List();
+        printProductList(products);
+        if(products == null || products.isEmpty())
+            return;
+
         int id = getEntityId();
         try {
-            if (vehicleType == 1) {
+            if (type == 1) {
                 ShopService.get_carShop().RemoveFromStock(id);
             }
-            else if(vehicleType == 2){
+            else if(type == 2){
                 ShopService.get_motorcycleShop().RemoveFromStock(id);
             }
         } catch (EntityNotFoundException e) {
