@@ -2,6 +2,7 @@ package Data.Converters;
 
 import Data.Entities.Accounting.Enums.TransactionType;
 import Data.Entities.Accounting.Transaction;
+import com.opencsv.CSVParser;
 
 import java.time.LocalDateTime;
 
@@ -12,24 +13,29 @@ public class TransactionCsvConverter
     @Override
     public Transaction ConvertReverse(String s)
     {
-        String[] csv = s.split(",");
+        CSVParser parser = new CSVParser();
+        String[] csvList;
+        try {
+            csvList = parser.parseLine(s);
+            int id = Integer.parseInt(csvList[0]);
+            TransactionType transactionType = TransactionType.valueOf(csvList[1]);
+            String productType = csvList[2];
+            int productId = Integer.parseInt(csvList[3]);
+            String productName = csvList[4];
+            double salePrice = Double.parseDouble(csvList[5]);
+            int customerId = Integer.parseInt(csvList[6]);
+            String customerName = csvList[7];
+            LocalDateTime date = LocalDateTime.parse(csvList[8]);
 
-        int id = Integer.parseInt(csv[0]);
-        TransactionType transactionType = TransactionType.valueOf(csv[1]);
-        String productType = csv[2];
-        int productId = Integer.parseInt(csv[3]);
-        String productName = csv[4];
-        double salePrice = Double.parseDouble(csv[5]);
-        int customerId = Integer.parseInt(csv[6]);
-        String customerName = csv[7];
-        LocalDateTime date = LocalDateTime.parse(csv[8]);
-
-        return new Transaction(id, transactionType, productType, productId, productName, salePrice, customerId, customerName, date);
+            return new Transaction(id, transactionType, productType, productId, productName, salePrice, customerId, customerName, date);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
     public String Convert(Transaction t) {
-        return String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s",
+        return String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
                 t.get_key(),
                 t.get_transactionType(),
                 t.get_productType(),

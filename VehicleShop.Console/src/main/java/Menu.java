@@ -213,6 +213,12 @@ public class Menu {
 
     private void getVehicleDetails() {
         int type = getVehicleType();
+
+        ArrayList<ProductListItem> products = type == 1 ? ShopService.get_carShop().List() : ShopService.get_motorcycleShop().List();
+        printProductList(products);
+        if(products == null || products.isEmpty())
+            return;
+
         int id = getEntityId();
         try {
             Vehicle vehicle = type == 1
@@ -233,6 +239,8 @@ public class Menu {
         table.addRow("Type", v.get_productType());
         table.addRule();
         table.addRow("Serial number", v.get_serialNumber());
+        table.addRule();
+        table.addRow("Name", v.get_name());
         table.addRule();
         table.addRow("Year", v.get_year());
         table.addRule();
@@ -294,6 +302,12 @@ public class Menu {
             return;
 
         int id = getEntityId();
+        if(products.stream().noneMatch(x -> x.get_id() == id))
+        {
+            System.out.println("Vehicle \'"+id+"\' not found!");
+            return;
+        }
+
         System.out.println("Enter customer ID:");
         int customerId = _intValidator.getInput();
         Customer customer;
