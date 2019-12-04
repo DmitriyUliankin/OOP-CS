@@ -78,7 +78,10 @@ public class ShopService
 
     public static List<Transaction> listTodaysTransactions()
     {
-        return _transactionRepository.List()
+        if(get_transactionRepository().List() == null || get_transactionRepository().List().isEmpty())
+            return null;
+
+        return get_transactionRepository().List()
                 .stream()
                 .filter(x -> x.get_date().getDayOfYear() == LocalDate.now().getDayOfYear())
                 .collect(Collectors.toList());
