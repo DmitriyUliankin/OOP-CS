@@ -19,6 +19,7 @@ import Services.Shop.Vehicle.CarShop;
 import Services.Shop.Vehicle.MotorcycleShop;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,14 +77,14 @@ public class ShopService
         return products;
     }
 
-    public static List<Transaction> listTodaysTransactions()
+    public static List<Transaction> listTransactions(LocalDate date)
     {
         if(get_transactionRepository().List() == null || get_transactionRepository().List().isEmpty())
             return null;
 
         return get_transactionRepository().List()
                 .stream()
-                .filter(x -> x.get_date().getDayOfYear() == LocalDate.now().getDayOfYear())
+                .filter(x -> x.get_date().getDayOfYear() == date.getDayOfYear())
                 .collect(Collectors.toList());
     }
 

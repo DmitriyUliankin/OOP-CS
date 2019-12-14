@@ -1,5 +1,5 @@
 package Data.Entities.Vehicle.Enums;
 
 public enum FuelType {
-    Petroleum, Gazoline, Diezel, Electricity, Hybrid
+    Petroleum, Gasoline, Diesel, Electricity, Hybrid
 }
