@@ -8,11 +8,13 @@ import Exceptions.Entities.EntityAlreadyExistException;
 import Exceptions.Entities.EntityNotFoundException;
 import Exceptions.Entities.ProductAlreadySoldException;
 import Services.Shop.Models.ProductListItem;
+import Servises.DateInputValidator;
 import Servises.DoubleInputValidator;
 import Servises.IntInputValidator;
 import de.vandermeer.asciitable.AsciiTable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -21,6 +23,7 @@ public class Menu {
 
     private IntInputValidator _intValidator = new IntInputValidator();
     private DoubleInputValidator _doubleValidator = new DoubleInputValidator();
+    private DateInputValidator _dateValidator = new DateInputValidator();
     private boolean _isActive = true;
 
     public boolean getStatus() {
@@ -35,7 +38,7 @@ public class Menu {
         System.out.println("5. Show all motorcycles");
         System.out.println("6. Get vehicle details");
         System.out.println("7. Sale vehicle");
-        System.out.println("8. Print transactions by day");
+        System.out.println("8. Print sales by date");
         System.out.println("9. Exit");
         awaitUserInput();
     }
@@ -72,7 +75,7 @@ public class Menu {
                 break;
             }
             case 8: {
-                printTodaysTransaction();
+                printTransactions();
                 break;
             }
             case 9: {
@@ -147,9 +150,9 @@ public class Menu {
             case 1:
                 return FuelType.Petroleum;
             case 2:
-                return FuelType.Gazoline;
+                return FuelType.Gasoline;
             case 3:
-                return FuelType.Diezel;
+                return FuelType.Diesel;
             case 4:
                 return FuelType.Electricity;
             default:
@@ -254,15 +257,16 @@ public class Menu {
         System.out.println(result);
     }
 
-    private void printTodaysTransaction() {
-        List<Transaction> sales = ShopService.listTodaysTransactions();
+    private void printTransactions() {
+        LocalDate date = getDate();
+        List<Transaction> sales = ShopService.listTransactions(date);
 
         if(sales == null || sales.isEmpty())
             System.out.println("No transactions was found!");
         else {
             AsciiTable header = new AsciiTable();
             header.addRule();
-            header.addRow("Transaction by "+ LocalDate.now());
+            header.addRow("Transaction by "+ date);
             header.addRule();
 
             AsciiTable table = new AsciiTable();
@@ -290,6 +294,18 @@ public class Menu {
 
             String transactionResult = table.render();
             System.out.println(transactionResult);
+        }
+    }
+
+    private LocalDate getDate() {
+        System.out.println("Print transactions by current day? [1 = yes, 2 = choose another date]");
+        int input = _intValidator.getInput();
+        if(input == 2)
+        {
+            return _dateValidator.getInput();
+        }
+        else {
+            return LocalDate.now();
         }
     }
 
